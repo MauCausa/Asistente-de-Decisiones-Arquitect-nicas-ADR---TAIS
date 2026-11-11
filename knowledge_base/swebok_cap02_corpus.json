@@ -1,0 +1,100 @@
+[
+  {
+    "id_fragmento": "SWEBOK-02-01",
+    "seccion_swebok": "SWEBOK v4.0 Cap. 02 - Sec. 2.1 Software Architecture Fundamentals & ASRs",
+    "tema": "Requisitos Arquitectónicamente Significativos (ASRs), Restricciones y Atributos de Calidad",
+    "contenido": "Según el SWEBOK v4.0 (Capítulo 02: Software Architecture), las decisiones arquitectónicas están gobernadas por los Requisitos Arquitectónicamente Significativos (Architecturally Significant Requirements, ASRs), que incluyen atributos de calidad medibles (rendimiento, disponibilidad, seguridad, mantenibilidad, escalabilidad, trazabilidad), restricciones técnicas y organizacionales (tamaño y experiencia del equipo, presupuesto, infraestructura de despliegue, plazos) y preocupaciones de los interesados (stakeholders). Ninguna arquitectura maximiza todos los atributos de calidad simultáneamente; toda decisión arquitectónica implica concesiones explícitas (trade-offs) que deben justificarse frente a las restricciones reales del proyecto.",
+    "palabras_clave": ["ASR", "atributos de calidad", "restricciones", "trade-offs", "SWEBOK v4.0"]
+  },
+  {
+    "id_fragmento": "SWEBOK-02-02",
+    "seccion_swebok": "SWEBOK v4.0 Cap. 02 - Sec. 2.4 Architecture Decisions, Design Rationale & MADR",
+    "tema": "Documentación de Decisiones Arquitectónicas (ADR), Design Rationale y Estándar MADR",
+    "contenido": "El SWEBOK v4.0 establece que la captura del design rationale (justificación del diseño) es esencial para prevenir la erosión y la deuda técnica arquitectónica. Un Registro de Decisión Arquitectónica (ADR) bajo el estándar MADR (Markdown Architectural Decision Records) debe documentar siete elementos obligatorios: (1) Identificador y Título de la decisión, (2) Estado del registro (Propuesto, Aceptado, Rechazado, Reemplazado), (3) Contexto y problema con alcance y volumen, (4) Drivers de decisión o ASRs, (5) Opciones consideradas (mínimo tres alternativas técnicamente viables con ventajas, desventajas y riesgos), (6) Decisión y justificación (Rationale) trazando explícitamente cómo la opción elegida responde a los ASRs y restricciones, y (7) Consecuencias positivas, negativas y trade-offs o riesgos residuales.",
+    "palabras_clave": ["ADR", "MADR", "design rationale", "deuda técnica", "trazabilidad"]
+  },
+  {
+    "id_fragmento": "SWEBOK-02-03",
+    "seccion_swebok": "SWEBOK v4.0 Cap. 02 - Sec. 2.3 Architectural Styles: Event-Driven & Streaming",
+    "tema": "Comunicación Asíncrona, Colas de Mensajes vs. Streaming Distribuido de Eventos",
+    "contenido": "En arquitecturas orientadas a eventos (SWEBOK v4.0 Cap. 02), el desacoplamiento temporal y la absorción de picos de carga (load leveling) se logran mediante intermediarios asíncronos. Se distinguen tres patrones principales: (1) Plataforma de streaming distribuido basada en log particionado (ej. Apache Kafka), ideal cuando se requiere alto throughput, orden garantizado por clave de partición (por agregado/pedido), retención durable de eventos para auditoría y capacidad de reprocesamiento (replay) por múltiples consumidores independientes; su trade-off es mayor complejidad operativa de particiones y offsets. (2) Broker de mensajería tradicional AMQP (ej. RabbitMQ), óptimo para enrutamiento complejo y colas de trabajo con menor curva de aprendizaje, pero donde los mensajes se eliminan tras su consumo dificultando el reprocesamiento histórico. (3) Colas administradas o Streams en memoria (ej. Redis Streams / Cloud PubSub), que reducen carga operativa pero pueden limitar retención prolongada o portabilidad en contenedores.",
+    "palabras_clave": ["comunicación asíncrona", "Apache Kafka", "RabbitMQ", "desacoplamiento temporal", "reprocesamiento de eventos", "picos de carga"]
+  },
+  {
+    "id_fragmento": "SWEBOK-02-04",
+    "seccion_swebok": "SWEBOK v4.0 Cap. 02 - Sec. 2.3 Multi-Tenant Data Architecture & Isolation Tactics",
+    "tema": "Estrategias de Aislamiento de Datos en Plataformas SaaS Multiempresa (Multi-Tenancy)",
+    "contenido": "Para sistemas SaaS multiempresa (multi-tenant), la arquitectura de datos equilibra aislamiento de seguridad, costo de infraestructura y mantenibilidad de migraciones de esquema mediante tres alternativas (SWEBOK v4.0 Cap. 02): (1) Base de datos y esquema compartidos con discriminador tenant_id y políticas Row-Level Security (RLS) nativas del motor (ej. PostgreSQL RLS): maximiza la eficiencia de costos y simplifica las actualizaciones de esquema para cientos de clientes con equipos pequeños, exigiendo como mitigación pruebas automatizadas de aislamiento y fijación centralizada del contexto del tenant en cada transacción. (2) Esquema separado por arrendatario (Schema-per-Tenant) en una misma instancia: ofrece aislamiento lógico intermedio, pero degrada el catálogo y complica migraciones al superar decenas o cientos de esquemas. (3) Base de datos independiente por arrendatario (Database-per-Tenant): brinda máximo aislamiento físico y regulatorio, pero dispara el costo operativo y de infraestructura.",
+    "palabras_clave": ["SaaS", "multi-tenant", "aislamiento de datos", "PostgreSQL", "Row Level Security", "RLS", "mantenibilidad del esquema"]
+  },
+  {
+    "id_fragmento": "SWEBOK-02-05",
+    "seccion_swebok": "SWEBOK v4.0 Cap. 02 - Sec. 2.2 Security Quality Tactics: Identity, OAuth2/OIDC & API Gateway",
+    "tema": "Autenticación Centralizada, Inicio de Sesión Único (SSO) y Convivencia con Sistemas Heredados",
+    "contenido": "Las tácticas arquitectónicas de seguridad e interoperabilidad para ecosistemas de APIs heterogéneos (SWEBOK v4.0 Cap. 02) recomiendan externalizar y centralizar la autenticación mediante un Proveedor de Identidad (IdP) basado en estándares abiertos OpenID Connect (OIDC) para federación de identidad/SSO y OAuth 2.0 para autorización delegada mediante tokens JWT de corta duración con control de acceso basado en roles (RBAC) centralizado. La combinación con un API Gateway permite descargar (offload) la validación de firmas criptográficas, control de sesiones y políticas transversales, mientras que el patrón Adapter / Strangler Fig permite integrar sistemas heredados gradualmente sin reescribirlos de forma simultánea.",
+    "palabras_clave": ["autenticación centralizada", "SSO", "OpenID Connect", "OAuth 2.0", "API Gateway", "sistemas heredados"]
+  },
+  {
+    "id_fragmento": "SWEBOK-02-06",
+    "seccion_swebok": "SWEBOK v4.0 Cap. 02 - Sec. 2.2 Performance Quality Tactics: Distributed Caching",
+    "tema": "Patrones de Caché Distribuida, Consistencia Acotada y Mitigación de Cache Stampede",
+    "contenido": "Ante cargas intensivas de lectura con baja tasa de escritura, el SWEBOK v4.0 Cap. 02 contempla tácticas de replicación y almacenamiento en caché en memoria (ej. Redis). Las opciones principales incluyen: (1) Patrón Cache-Aside (Lazy Loading) con invalidación explícita por eventos o escritura en datos críticos (como cambios de precio) y TTL diferenciado más corto para datos sensibles y más largo para catálogos descriptivos, incorporando bloqueo distribuido o jitter para prevenir cache stampede; mantiene la base de datos como fuente de verdad. (2) Patrón Write-Through / Read-Through, que garantiza consistencia inmediata en caché pero añade latencia y acoplamiento en todas las escrituras. (3) Réplicas de lectura de base de datos o vistas materializadas, que escalan lecturas SQL sin caché externa pero con mayor costo de infraestructura y sin alcanzar latencias sub-milisegundo.",
+    "palabras_clave": ["caché distribuida", "Redis", "cache-aside", "consistencia eventual", "TTL", "cache stampede", "rendimiento de lectura"]
+  },
+  {
+    "id_fragmento": "SWEBOK-02-07",
+    "seccion_swebok": "SWEBOK v4.0 Cap. 02 - Sec. 2.2 Reliability & Availability Tactics: Fault Tolerance",
+    "tema": "Resiliencia e Integridad Transaccional ante Fallas de Proveedores Externos",
+    "contenido": "Para proteger servicios internos frente a dependencias externas con latencia variable o caídas transitorias (ej. pasarelas de pago), el SWEBOK v4.0 Cap. 02 prescribe combinar tácticas de detección, aislamiento y recuperación: (1) Patrón combinado de Timeout estricto, Circuit Breaker, Reintentos acotados con Exponential Backoff + Jitter, persistencia previa de Claves de Idempotencia (Idempotency Keys) y cola de reconciliación asíncrona para estados inciertos: evita el agotamiento de hilos (thread pool exhaustion), impide cobros duplicados y audita fallas definitivas. (2) Procesamiento puramente asíncrono mediante cola intermedia desde el inicio, que desacopla totalmente al cliente pero sacrifica la respuesta síncrona inmediata del cobro. (3) Conmutación pasiva a una segunda pasarela de pagos (Multi-PSP Failover), que eleva la disponibilidad pero duplica costos de integración, conciliación y comisiones.",
+    "palabras_clave": ["tolerancia a fallos", "circuit breaker", "timeout", "backoff exponencial", "idempotencia", "reconciliación", "pagos"]
+  },
+  {
+    "id_fragmento": "SWEBOK-02-08",
+    "seccion_swebok": "SWEBOK v4.0 Cap. 02 - Sec. 2.3 Architectural Decomposition: Modular Monolith vs. Microservices",
+    "tema": "Estrategias de Modularización y Evolución Arquitectónica para Equipos Pequeños",
+    "contenido": "El SWEBOK v4.0 Cap. 02 enfatiza que la elección del estilo de descomposición debe alinearse con la capacidad operativa (DevOps), el tamaño del equipo (Ley de Conway) y la madurez del dominio: (1) Monolito Modular (Modular Monolith): organiza el sistema en una única unidad de despliegue pero con límites de contexto (bounded contexts) estrictos, encapsulamiento de datos por módulo y comunicación mediante interfaces explícitas y eventos en memoria; minimiza el costo operativo inicial para equipos pequeños con plazos cortos y preserva una ruta evolutiva limpia para extraer microservicios futuros cuando existan cuellos de botella reales. (2) Arquitectura de Microservicios desde el inicio: permite escalado y despliegue independiente por servicio, pero introduce alta sobrecarga cognitiva y operativa (redes, trazabilidad distribuida, consistencia eventual, pipelines múltiples) riesgosa para equipos reducidos. (3) Monolito en capas tradicional sin fronteras modulares: rápido en las primeras semanas, pero propenso al acoplamiento transversal (Big Ball of Mud).",
+    "palabras_clave": ["monolito modular", "microservicios", "mantenibilidad", "evolución gradual", "equipo pequeño", "bounded contexts"]
+  },
+  {
+    "id_fragmento": "SWEBOK-02-09",
+    "seccion_swebok": "SWEBOK v4.0 Cap. 02 - Sec. 2.2 Security & Auditability Tactics: Immutable Audit Logs",
+    "tema": "Registro de Auditoría Inmutable, Integridad Criptográfica y Retención Normativa",
+    "contenido": "En sistemas regulados como aplicaciones clínicas o financieras, las tácticas de no repudio e integridad de auditoría del SWEBOK v4.0 Cap. 02 exigen separar el plano de auditoría de la base de datos operacional: (1) Almacén centralizado de solo adición (append-only) separado de la base transaccional, con políticas de retención bloqueada (WORM / Object Lock), cifrado en tránsito y reposo, control de acceso exclusivo para el rol de auditoría, encadenamiento criptográfico de hashes (hash chaining / Merkle tree) para detectar cualquier alteración, e indexación de metadatos mínimos (paciente, usuario, fecha, acción) sin exponer datos clínicos sensibles. (2) Tablas de auditoría mediante triggers en la misma base operacional: simples de implementar, pero vulnerables a manipulación por administradores de base de datos y degradan el almacenamiento primario tras años de retención. (3) Ledger distribuido o Blockchain permisionada: ofrece inmutabilidad fuerte pero con alto costo de infraestructura y baja eficiencia de búsqueda ad-hoc.",
+    "palabras_clave": ["auditoría inmutable", "append-only", "encadenamiento de hashes", "WORM", "confidencialidad", "retención", "clínica"]
+  },
+  {
+    "id_fragmento": "SWEBOK-02-10",
+    "seccion_swebok": "SWEBOK v4.0 Cap. 02 - Sec. 2.3 Cloud & Distributed Content Delivery Architecture",
+    "tema": "Almacenamiento de Objetos, Distribución Global por CDN y Acceso Privado Firmado",
+    "contenido": "Para la distribución global de archivos multimedia pesados con control de acceso privado, el SWEBOK v4.0 Cap. 02 describe la separación entre servidores de aplicación y entrega de contenido estático/multimedia: (1) Almacenamiento en Object Storage en la nube combinado con una Red de Entrega de Contenido (CDN) global, utilizando cargas directas multipartes (multipart upload) y URLs o cookies firmadas (presigned URLs) de corta duración emitidas por el backend tras validar permisos; descarga por completo el ancho de banda y disco del servidor web y reduce la latencia multirregión, teniendo como trade-off costos de egreso y acoplamiento al proveedor cloud. (2) Almacenamiento en volúmenes compartidos de red (NFS/EFS) servidos por los nodos web: evita URLs firmadas externas, pero satura la red de los servidores de aplicación y carece de caché de borde geográfica. (3) Servicio de streaming especializado de terceros (PaaS de video): simplifica transcodificación y DRM, pero con costos por minuto/almacenamiento muy superiores para materiales descargables generales.",
+    "palabras_clave": ["object storage", "CDN", "URLs firmadas", "carga multiparte", "multimedia", "escalabilidad de almacenamiento"]
+  },
+  {
+    "id_fragmento": "SWEBOK-02-11",
+    "seccion_swebok": "SWEBOK v4.0 Cap. 02 - Sec. 2.3 Distributed Transactions: Saga Pattern & Transactional Outbox",
+    "tema": "Consistencia Eventual entre Microservicios con Bases de Datos Independientes",
+    "contenido": "Cuando rige el principio Database-per-Service y se descartan transacciones distribuidas de bloqueo (2PC), el SWEBOK v4.0 Cap. 02 establece patrones de consistencia eventual confiable: (1) Patrón Saga (orquestada o coreografiada) combinado con Transactional Outbox en cada microservicio y consumidores idempotentes: cada servicio registra en una única transacción local su cambio de estado y el evento en la tabla Outbox para su publicación garantizada (at-least-once), ejecutando transacciones compensatorias explícitas y auditables si falla un paso posterior (ej. reserva de inventario o cobro). (2) Publicación directa al broker después del commit local (Dual Write sin Outbox): más simple inicialmente, pero pierde eventos si el proceso cae entre el commit de base de datos y el envío al broker. (3) Event Sourcing completo con CQRS: garantiza trazabilidad total de estados como secuencia de eventos, pero exige rediseñar todo el modelo de persistencia y consultas del sistema.",
+    "palabras_clave": ["Saga", "Transactional Outbox", "consistencia eventual", "compensación", "idempotencia", "microservicios"]
+  },
+  {
+    "id_fragmento": "SWEBOK-02-12",
+    "seccion_swebok": "SWEBOK v4.0 Cap. 02 - Sec. 2.2 Operability & Observability Architecture: OpenTelemetry",
+    "tema": "Observabilidad Unificada de Métricas, Logs y Trazas en Entornos Kubernetes Políglotas",
+    "contenido": "En arquitecturas distribuidas sobre Kubernetes con múltiples lenguajes de programación, la capacidad de diagnóstico (observability & monitorability en SWEBOK v4.0 Cap. 02) requiere correlación estandarizada: (1) Estandarización mediante OpenTelemetry (OTel) con propagación de contexto W3C Trace Context (correlation/trace ID) en logs estructurados JSON, métricas y trazas, canalizados a través de un OpenTelemetry Collector central en el clúster con políticas de muestreo basadas en cola o cabeza (tail/head-based sampling) para retener el 100% de trazas con error o alta latencia y muestrear el tráfico sano dentro del presupuesto. (2) Agentes propietarios de un proveedor APM comercial en cada pod: rápida puesta en marcha, pero alto costo por host/ingesta y fuerte vendor lock-in. (3) Agregación exclusiva de logs centralizados (ej. fluent-bit + Loki/ELK) sin trazas distribuidas: económica, pero insuficiente para reconstruir latencias y cuellos de botella entre veinte servicios.",
+    "palabras_clave": ["OpenTelemetry", "observabilidad", "Kubernetes", "trazas distribuidas", "correlation ID", "muestreo", "Collector"]
+  },
+  {
+    "id_fragmento": "SWEBOK-02-13",
+    "seccion_swebok": "SWEBOK v4.0 Cap. 02 - Sec. 2.2 Availability Tactics: Disaster Recovery & Multi-Region",
+    "tema": "Estrategias de Recuperación Regional ante Desastres Alineadas a RTO, RPO y Presupuesto",
+    "contenido": "El diseño de continuidad operativa multirregión (SWEBOK v4.0 Cap. 02) equilibra el Tiempo Objetivo de Recuperación (RTO), el Punto Objetivo de Recuperación (RPO) y el costo de infraestructura mediante tres arquitecturas: (1) Multi-región Active-Passive (Warm Standby / Pilot Light precalentado) con replicación asíncrona continua de base de datos (cumpliendo RPO <= 15 min) e infraestructura como código (IaC) con capacidad mínima precalentada que escala automáticamente al activar el failover DNS y runbooks probados periódicamente (cumpliendo RTO <= 60 min a una fracción del costo de active-active). (2) Multi-región Active-Active: ofrece RTO cercano a cero, pero duplica el costo permanente de cómputo y exige resolución compleja de conflictos de escritura multirregión. (3) Backup & Restore frío desde snapshots entre regiones: opción más barata, pero el aprovisionamiento y restauración desde cero suele exceder los 60 minutos de RTO en sistemas críticos.",
+    "palabras_clave": ["recuperación ante desastres", "RTO", "RPO", "active-passive", "warm standby", "replicación", "runbooks"]
+  },
+  {
+    "id_fragmento": "SWEBOK-02-14",
+    "seccion_swebok": "SWEBOK v4.0 Cap. 02 - Sec. 2.2 Security Tactics: Centralized Secret Management & OIDC",
+    "tema": "Gestión Centralizada de Secretos, Identidades Efímeras en CI/CD y Rotación Automática",
+    "contenido": "Para mitigar la exposición de credenciales en código fuente, contenedores y pipelines CI/CD, el SWEBOK v4.0 Cap. 02 recomienda tácticas de gestión de secretos de confianza cero (Zero Trust): (1) Servicio centralizado de gestión de secretos (ej. HashiCorp Vault o Secret Manager administrado en nube) integrado mediante autenticación federada de corta duración (OIDC en GitHub Actions y Service Accounts/Workload Identity en contenedores), inyección dinámica en memoria o variables efímeras en tiempo de ejecución, políticas de mínimo privilegio por aplicación, auditoría centralizada y rotación automática de credenciales. (2) Secretos cifrados estáticamente en el repositorio (GitOps con SOPS / Sealed Secrets): elimina texto plano en Git, pero complica la rotación automática sin redesplegar y mantiene llaves de descifrado de larga duración. (3) Variables secretas manuales en GitHub Actions y en servidores: sin costo adicional directo, pero carece de rotación automática centralizada, trazabilidad unificada de lectura y sincronización entre entornos.",
+    "palabras_clave": ["gestión de secretos", "rotación", "confidencialidad", "GitHub Actions", "OIDC", "mínimo privilegio", "contenedores"]
+  }
+]

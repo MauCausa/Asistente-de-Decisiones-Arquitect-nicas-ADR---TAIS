@@ -1,0 +1,194 @@
+[
+  {
+    "id_caso": "CASO_01",
+    "titulo_problema": "Comunicacion asincrona para pedidos de comercio electronico",
+    "contexto": "Una plataforma de comercio electronico procesa hasta 2500 pedidos por minuto durante campanas. El servicio de pedidos invoca directamente a inventario, pagos y notificaciones, por lo que una falla parcial bloquea toda la operacion. El negocio necesita desacoplar los servicios y conservar los eventos para auditoria y reprocesamiento.",
+    "drivers_arquitectonicos": [
+      "Escalabilidad ante picos de carga",
+      "Desacoplamiento temporal",
+      "Trazabilidad y reprocesamiento de eventos"
+    ],
+    "restricciones": [
+      "Despliegue en contenedores Docker",
+      "Equipo con experiencia basica en mensajeria",
+      "No se permite perder pedidos confirmados"
+    ],
+    "adr_referencia": "Adoptar una plataforma de streaming distribuido basada en Apache Kafka para publicar eventos de pedidos. Usar claves por pedido para mantener orden por agregado, confirmaciones durables, esquema versionado y consumidores independientes. La solucion aumenta la complejidad operativa, pero satisface el volumen, la retencion y el reprocesamiento requeridos."
+  },
+  {
+    "id_caso": "CASO_02",
+    "titulo_problema": "Aislamiento de datos en una plataforma SaaS multiempresa",
+    "contexto": "Un sistema SaaS de gestion comercial atendera inicialmente a 80 empresas y proyecta alcanzar 600. Cada cliente maneja informacion financiera sensible y exige que sus datos no sean visibles para otros arrendatarios. El equipo necesita equilibrar aislamiento, costo operativo y facilidad de actualizacion del esquema.",
+    "drivers_arquitectonicos": [
+      "Aislamiento de datos",
+      "Mantenibilidad del esquema",
+      "Eficiencia de costos"
+    ],
+    "restricciones": [
+      "PostgreSQL como motor de base de datos",
+      "Equipo de cuatro desarrolladores",
+      "Presupuesto limitado para infraestructura"
+    ],
+    "adr_referencia": "Usar una base PostgreSQL compartida con esquema comun y columna tenant_id, aplicando Row Level Security en todas las tablas multiempresa. Centralizar la resolucion del arrendatario y exigir pruebas automaticas de aislamiento. Esta alternativa reduce costos y simplifica migraciones, aunque requiere controles estrictos para evitar filtraciones entre clientes."
+  },
+  {
+    "id_caso": "CASO_03",
+    "titulo_problema": "Autenticacion centralizada para APIs de una plataforma universitaria",
+    "contexto": "Una universidad integra matriculas, biblioteca, pagos y aula virtual mediante APIs independientes. Actualmente cada sistema mantiene credenciales y sesiones propias, generando experiencias inconsistentes y riesgos de seguridad. Se requiere inicio de sesion unico para estudiantes, docentes y personal administrativo.",
+    "drivers_arquitectonicos": [
+      "Seguridad",
+      "Interoperabilidad",
+      "Experiencia de inicio de sesion unico"
+    ],
+    "restricciones": [
+      "Convivencia temporal con sistemas heredados",
+      "Acceso web y movil",
+      "Roles institucionales administrados de forma central"
+    ],
+    "adr_referencia": "Centralizar la identidad mediante un proveedor compatible con OpenID Connect y OAuth 2.0. Las aplicaciones actuaran como clientes y validaran tokens de corta duracion; un API Gateway aplicara autenticacion y politicas comunes. La migracion sera gradual mediante adaptadores para los sistemas heredados."
+  },
+  {
+    "id_caso": "CASO_04",
+    "titulo_problema": "Cache distribuida para un catalogo de productos de alta demanda",
+    "contexto": "El catalogo de una tienda recibe 12000 lecturas por minuto y menos de 200 actualizaciones. La base de datos alcanza niveles altos de CPU durante promociones y el tiempo de respuesta supera dos segundos. Los precios deben reflejarse en pocos minutos, pero no se exige consistencia instantanea para las descripciones.",
+    "drivers_arquitectonicos": [
+      "Rendimiento de lectura",
+      "Escalabilidad",
+      "Consistencia controlada"
+    ],
+    "restricciones": [
+      "Redis esta disponible como servicio administrado",
+      "Tiempo objetivo de respuesta menor a 300 ms",
+      "Los precios no pueden permanecer obsoletos mas de dos minutos"
+    ],
+    "adr_referencia": "Implementar el patron cache-aside con Redis para las consultas del catalogo. Aplicar TTL diferenciado, invalidacion explicita al actualizar precios y proteccion contra cache stampede. La base de datos continua siendo la fuente de verdad; se acepta consistencia eventual acotada a cambio de menor latencia y carga."
+  },
+  {
+    "id_caso": "CASO_05",
+    "titulo_problema": "Resiliencia ante fallas de un proveedor externo de pagos",
+    "contexto": "Un servicio de cobros depende de una pasarela externa que presenta latencias variables y caidas breves. Los reintentos actuales pueden duplicar cargos y agotar los hilos del servicio. El negocio necesita mantener la operacion y evitar cobros repetidos sin ocultar fallas definitivas.",
+    "drivers_arquitectonicos": [
+      "Tolerancia a fallos",
+      "Integridad de transacciones",
+      "Recuperacion controlada"
+    ],
+    "restricciones": [
+      "La pasarela admite claves de idempotencia",
+      "Tiempo maximo de espera de ocho segundos",
+      "Las operaciones fallidas deben quedar auditadas"
+    ],
+    "adr_referencia": "Aplicar timeout, circuit breaker y reintentos limitados con backoff exponencial y jitter. Cada solicitud usara una clave de idempotencia persistida antes de invocar a la pasarela. Las operaciones no resueltas pasaran a una cola de reconciliacion, evitando tanto la espera indefinida como los cargos duplicados."
+  },
+  {
+    "id_caso": "CASO_06",
+    "titulo_problema": "Estrategia de modularizacion para un producto con equipo pequeno",
+    "contexto": "Una empresa inicia un sistema de reservas con seis desarrolladores y un plazo de cuatro meses. Se esperan cambios frecuentes en reglas comerciales, pero el volumen inicial sera moderado. El equipo evalua adoptar microservicios desde el inicio para facilitar un crecimiento futuro incierto.",
+    "drivers_arquitectonicos": [
+      "Velocidad de entrega",
+      "Mantenibilidad",
+      "Evolucion gradual"
+    ],
+    "restricciones": [
+      "Equipo unico de seis desarrolladores",
+      "Plazo inicial de cuatro meses",
+      "Capacidad DevOps limitada"
+    ],
+    "adr_referencia": "Construir un monolito modular con limites explicitos entre reservas, disponibilidad, pagos y usuarios. Prohibir dependencias directas entre modulos y comunicarlos mediante interfaces y eventos internos. Esta opcion reduce la carga operativa inicial y conserva una ruta de extraccion a servicios si aparecen necesidades reales de escalado independiente."
+  },
+  {
+    "id_caso": "CASO_07",
+    "titulo_problema": "Registro de auditoria inmutable para una aplicacion clinica",
+    "contexto": "Una aplicacion clinica debe registrar accesos y modificaciones de historias medicas. Los registros actuales se almacenan junto con los datos operacionales y pueden ser modificados por administradores de la aplicacion. Auditoria requiere trazabilidad, retencion prolongada y busqueda por paciente, usuario y fecha.",
+    "drivers_arquitectonicos": [
+      "Integridad de auditoria",
+      "Confidencialidad",
+      "Trazabilidad"
+    ],
+    "restricciones": [
+      "Retencion minima de cinco anos",
+      "Acceso restringido al equipo de auditoria",
+      "Los eventos no deben contener datos clinicos innecesarios"
+    ],
+    "adr_referencia": "Enviar eventos de auditoria estructurados a un almacen central de solo adicion separado de la base operacional. Cifrar los datos, aplicar controles de acceso independientes y proteger la integridad mediante encadenamiento de hashes o almacenamiento con retencion bloqueada. Los eventos incluiran identificadores y metadatos minimos para reducir exposicion de informacion sensible."
+  },
+  {
+    "id_caso": "CASO_08",
+    "titulo_problema": "Distribucion de archivos multimedia para una plataforma educativa",
+    "contexto": "Una plataforma educativa publicara videos y materiales descargables para usuarios de varias regiones. El almacenamiento local del servidor web genera saturacion de disco y transferencias lentas. Los archivos son grandes, cambian con poca frecuencia y algunos cursos requieren acceso privado.",
+    "drivers_arquitectonicos": [
+      "Escalabilidad de almacenamiento",
+      "Rendimiento global",
+      "Control de acceso"
+    ],
+    "restricciones": [
+      "Archivos de hasta 4 GB",
+      "Despliegue principal en nube publica",
+      "Contenido privado mediante autorizacion temporal"
+    ],
+    "adr_referencia": "Almacenar los archivos en object storage y distribuirlos mediante una CDN. La aplicacion emitira URLs firmadas de corta duracion para contenido privado y realizara cargas directas multipartes. Esta arquitectura descarga transferencia del servidor web y escala globalmente, a cambio de costos de egreso y dependencia del proveedor."
+  },
+  {
+    "id_caso": "CASO_09",
+    "titulo_problema": "Consistencia entre pedidos e inventario en microservicios",
+    "contexto": "Los servicios de pedidos e inventario usan bases de datos independientes. Una caida despues de confirmar el pedido puede impedir la reserva de stock, dejando estados inconsistentes. No es viable usar transacciones distribuidas y el negocio acepta consistencia eventual si las compensaciones son visibles.",
+    "drivers_arquitectonicos": [
+      "Consistencia eventual confiable",
+      "Trazabilidad de transacciones",
+      "Recuperacion ante fallos parciales"
+    ],
+    "restricciones": [
+      "Una base de datos por servicio",
+      "No se permiten transacciones de dos fases",
+      "Los mensajes pueden entregarse mas de una vez"
+    ],
+    "adr_referencia": "Implementar una saga para coordinar reserva, pago y confirmacion, junto con Transactional Outbox en cada servicio. Los consumidores seran idempotentes y registraran el estado de cada paso; ante una falla se ejecutaran acciones compensatorias. La solucion acepta consistencia eventual, pero evita la perdida de eventos y permite seguimiento operativo."
+  },
+  {
+    "id_caso": "CASO_10",
+    "titulo_problema": "Observabilidad unificada en una plataforma Kubernetes",
+    "contexto": "Una plataforma con veinte servicios en Kubernetes registra fallas intermitentes que no pueden seguirse entre componentes. Cada equipo usa formatos de log distintos y las metricas no se correlacionan con las trazas. Operaciones necesita reducir el tiempo de diagnostico y mantener control sobre el volumen almacenado.",
+    "drivers_arquitectonicos": [
+      "Observabilidad extremo a extremo",
+      "Diagnostico rapido",
+      "Control de costos de telemetria"
+    ],
+    "restricciones": [
+      "Servicios desarrollados en varios lenguajes",
+      "Ejecucion en Kubernetes",
+      "Retencion completa de trazas limitada por presupuesto"
+    ],
+    "adr_referencia": "Estandarizar metricas, logs y trazas con OpenTelemetry y propagar un identificador de correlacion. Usar un Collector central para procesar y exportar la telemetria a los backends existentes, aplicando muestreo configurable. Esto desacopla la instrumentacion del proveedor y mejora el diagnostico, aunque exige gobierno de atributos y volumen."
+  },
+  {
+    "id_caso": "CASO_11",
+    "titulo_problema": "Recuperacion regional para un sistema de tramites publicos",
+    "contexto": "Un sistema de tramites debe continuar disponible si la region principal de nube queda fuera de servicio. Las operaciones son importantes, pero el presupuesto no permite mantener toda la capacidad duplicada de forma activa. La organizacion acepta una interrupcion breve y una perdida maxima de datos claramente definida.",
+    "drivers_arquitectonicos": [
+      "Recuperacion ante desastres",
+      "Integridad de datos",
+      "Costo operativo"
+    ],
+    "restricciones": [
+      "RTO maximo de 60 minutos",
+      "RPO maximo de 15 minutos",
+      "Presupuesto insuficiente para active-active"
+    ],
+    "adr_referencia": "Adoptar una estrategia multi-region active-passive con replicacion continua de datos y capacidad minima precalentada en la region secundaria. Automatizar respaldos, infraestructura y conmutacion mediante runbooks probados trimestralmente. La alternativa cumple RTO y RPO con menor costo que active-active, aunque requiere aceptar un periodo breve de recuperacion."
+  },
+  {
+    "id_caso": "CASO_12",
+    "titulo_problema": "Gestion segura de secretos para aplicaciones y CI CD",
+    "contexto": "Varios equipos almacenan claves de API y contrasenas en archivos de configuracion y variables manuales del servidor. Se han encontrado secretos en historiales de repositorios y no existe rotacion central. El objetivo es reducir exposicion sin bloquear los despliegues automatizados.",
+    "drivers_arquitectonicos": [
+      "Confidencialidad",
+      "Rotacion y revocacion",
+      "Automatizacion de despliegues"
+    ],
+    "restricciones": [
+      "Pipelines alojados en GitHub Actions",
+      "Aplicaciones desplegadas en contenedores",
+      "Acceso basado en minimo privilegio"
+    ],
+    "adr_referencia": "Centralizar los secretos en un servicio administrado de gestion de secretos y permitir que cargas y pipelines se autentiquen mediante identidades de corta duracion. Eliminar secretos persistentes de repositorios e imagenes, habilitar rotacion y auditoria, y restringir permisos por aplicacion. La solucion agrega dependencia del servicio central, pero reduce significativamente la exposicion de credenciales."
+  }
+]

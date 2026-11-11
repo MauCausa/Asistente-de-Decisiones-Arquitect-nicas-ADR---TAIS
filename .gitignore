@@ -1,0 +1,22 @@
+# Secretos y variables de entorno
+.env
+.env.*
+!.env.example
+
+# Entornos virtuales y cache de Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+env/
+.pytest_cache/
+
+# Base de datos vectorial local de ChromaDB (se regenera automaticamente desde knowledge_base/)
+chroma_db/
+
+# Archivos temporales de Office y OS
+~$*.docx
+~$*.xlsx
+.DS_Store
+Thumbs.db
